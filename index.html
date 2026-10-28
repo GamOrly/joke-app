@@ -4,7 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>בדיחה בלחיצה</title>
+  <meta name="theme-color" content="#FFE15A">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Playpen+Sans+Hebrew:wght@500&display=swap" rel="stylesheet">
@@ -309,6 +312,10 @@
         setState("error", "אין חיבור לשרת. נסו שוב.");
       }
     });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
   </script>
 </body>
 </html>
