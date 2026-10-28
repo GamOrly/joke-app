@@ -133,6 +133,7 @@
     }
 
     .bubble {
+      position: relative;
       min-height: 190px;
       background: var(--paper);
       border: 3px solid var(--ink);
@@ -160,11 +161,45 @@
       color: var(--ink-soft);
     }
 
-    .message.joke {
+    /* טעינה: הדמות נמעכת ומשתחררת */
+    .bubble[data-state="think"] .mascot {
+      transform-origin: bottom center;
+      animation: squish 0.5s ease-in-out infinite alternate;
+    }
+
+    /* בדיחה: הדמות בפינה הימנית העליונה, חצי בחוץ, והבדיחה בכתב יד */
+    .bubble[data-state="joke"] {
+      padding-top: 34px;
+    }
+
+    .bubble[data-state="joke"] .mascot {
+      position: absolute;
+      top: -44px;
+      right: -14px;
+      width: 86px;
+      transform: rotate(8deg);
+      animation: laugh 0.45s ease-in-out 4;
+    }
+
+    .bubble[data-state="joke"] .message {
       font-family: var(--joke-font);
       font-size: 25px;
       line-height: 1.55;
       color: var(--ink);
+    }
+
+    /* שגיאה: רקע ורדרד, הודעה באדום, והדמות מתנדנדת */
+    .bubble[data-state="error"] {
+      background: var(--error-pink);
+    }
+
+    .bubble[data-state="error"] .mascot {
+      animation: wobble 0.6s ease-in-out 2;
+    }
+
+    .bubble[data-state="error"] .message {
+      color: var(--error);
+      font-weight: 600;
     }
 
     footer {
@@ -177,6 +212,23 @@
     @keyframes bob {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
+    }
+
+    @keyframes squish {
+      from { transform: scale(1, 1); }
+      to { transform: scale(1.08, 0.86); }
+    }
+
+    @keyframes laugh {
+      0%, 100% { transform: rotate(8deg); }
+      25% { transform: rotate(-6deg) translateY(-3px); }
+      75% { transform: rotate(16deg) translateY(-3px); }
+    }
+
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -201,7 +253,7 @@
     </form>
 
     <section class="bubble" id="bubble" data-state="idle">
-      <img class="mascot" src="assets/mascot-idle.svg" alt="הדמות מחייכת" width="120" height="112">
+      <img class="mascot" id="mascot" src="assets/mascot-idle.svg" alt="הדמות מחייכת" width="120" height="112">
       <p class="message" id="message" aria-live="polite">לוחצים על הכפתור, והבדיחה מופיעה כאן</p>
     </section>
   </main>
@@ -213,25 +265,48 @@
     const topicInput = document.getElementById("topic");
     const button = document.getElementById("go");
     const message = document.getElementById("message");
+    const bubble = document.getElementById("bubble");
+    const mascot = document.getElementById("mascot");
+
+    // לכל מצב: ציור הדמות, תיאור לקורא מסך, וטקסט הכפתור
+    const STATES = {
+      idle: { src: "assets/mascot-idle.svg", alt: "הדמות מחייכת", button: "תנו לי בדיחה!" },
+      think: { src: "assets/mascot-think.svg", alt: "הדמות חושבת", button: "חושב..." },
+      joke: { src: "assets/mascot-joke.svg", alt: "הדמות צוחקת", button: "עוד בדיחה!" },
+      error: { src: "assets/mascot-error.svg", alt: "הדמות מסוחררת", button: "לנסות שוב" },
+    };
+
+    function setState(state, text) {
+      const { src, alt, button: label } = STATES[state];
+      bubble.dataset.state = state;
+      mascot.src = src;
+      mascot.alt = alt;
+      button.textContent = label;
+      button.disabled = state === "think";
+      message.textContent = text;
+    }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      button.disabled = true;
+      if (button.disabled) return;
+
+      const topic = topicInput.value.trim();
+      setState("think", topic ? `מחפש בדיחה על ${topic}...` : "מחפש בדיחה...");
 
       try {
         const response = await fetch("/api/joke", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ topic: topicInput.value.trim() }),
+          body: JSON.stringify({ topic }),
         });
         const data = await response.json();
-        message.textContent = data.joke || data.error || "משהו השתבש. נסו שוב.";
-        message.classList.toggle("joke", Boolean(data.joke));
+        if (response.ok && data.joke) {
+          setState("joke", data.joke);
+        } else {
+          setState("error", data.error || "משהו השתבש. נסו שוב.");
+        }
       } catch {
-        message.textContent = "אין חיבור לשרת. נסו שוב.";
-        message.classList.remove("joke");
-      } finally {
-        button.disabled = false;
+        setState("error", "אין חיבור לשרת. נסו שוב.");
       }
     });
   </script>
