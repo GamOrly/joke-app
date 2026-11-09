@@ -1,6 +1,6 @@
 # בדיחה בלחיצה (joke-app)
 
-אפליקציית PWA בעברית: כותבים נושא, מקבלים בדיחה מ-GPT-5, דרך פונקציה ב-Vercel.
+אפליקציית PWA בעברית: כותבים נושא, מקבלים בדיחה מ-GPT-5, דרך פונקציה ב-Vercel. הבדיחות והצחוקים נשמרים ב-Supabase.
 
 ## מסמכי האיפיון
 כל המסמכים בתיקייה `spec/`. הם המקור לכל החלטה:
@@ -22,10 +22,16 @@
 ## מפתחות (חוק ברזל)
 - לא לבקש ממני אף מפתח.
 - לא לכתוב ולא לקרוא מפתח בשום קובץ.
-- מפתח ה-production שמור אצלי ב-Vercel. מפתח ה-dev אני מדביקה בעצמי ב-`.env.local`.
+- מפתחות ה-production שמורים אצלי ב-Vercel: `OPENAI_API_KEY` ו-`SUPABASE_SECRET_KEY`. מפתחות ה-dev אני מדביקה בעצמי ב-`.env.local`.
 - `.claude/settings.json` חוסם את הקריאה של `.env` ושל `.env.*`. לא לעקוף את החסימה בשום דרך, גם לא דרך shell.
-- `.env.example` מכיל רק את השורה `OPENAI_API_KEY=`, בלי ערך ובלי הערות.
+- `.env.example` מכיל רק שתי שורות, `OPENAI_API_KEY=` ו-`SUPABASE_SECRET_KEY=`, בלי ערכים ובלי הערות.
 - `.gitignore` מתעלם מ-`.env`, מ-`.env.*`, מ-`.vercel` ומ-`node_modules`, עם החריגה `!.env.example`. לבדוק שהוא קיים לפני כל commit.
+
+## נתונים (Supabase)
+- השמירה ב-Supabase. רק הפונקציות בתיקייה `api` מדברות איתו, דרך לקוח אחד ב-`lib/supabase.js`, עם `SUPABASE_URL` ו-`SUPABASE_SECRET_KEY` מ-`process.env`.
+- הדף מדבר רק עם `/api`. אין בו כתובת, מפתח או ספרייה של Supabase.
+- כל טבלה נעולה: RLS דולק בלי policy, `revoke all` מ-anon ומ-authenticated, ו-grant ל-service_role רק על מה שצריך. לא מקבלים הצעה של Supabase להוסיף policy או grant ל-anon.
+- שינוי בבסיס הנתונים: דרך המחבר של Supabase, כ-migration. ה-SQL נשמר גם בתיקייה `db/`, ומוצג לי לפני ההרצה. אחרי ההרצה: `get_advisors`, והסבר בעברית.
 
 ## Git ופריסה
 - ריפו ציבורי: `GamOrly/joke-app` ב-GitHub. ענף `main` בלבד, בלי ענפים ובלי מיזוגים.
@@ -47,3 +53,4 @@
 
 ## החלטות שהתקבלו
 - מודל שמסרב לנושא פוגעני: מציגים את מה שהמודל החזיר, בלי קוד נוסף לזיהוי סירוב.
+- בלי נתוני דוגמה בטבלה `jokes`, למרות הכלל ב-course-stack.md. הרשימה "הכי מצחיקות" ריקה עד הצחוק הראשון.

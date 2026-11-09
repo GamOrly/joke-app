@@ -1,4 +1,7 @@
-// Milestone 2: בדיחה מ-GPT-5 דרך Responses API. המפתח נקרא כאן בלבד, ולא חוזר לדף.
+// בדיחה מ-GPT-5 דרך Responses API. המפתח נקרא כאן בלבד, ולא חוזר לדף.
+// Milestone 4: כל בדיחה נשמרת בטבלה jokes, וה-id שלה חוזר לדף.
+
+import { getSupabase } from "../lib/supabase.js";
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 
@@ -98,6 +101,23 @@ export default {
       return json({ error: "לא התקבלה בדיחה. נסו שוב." }, 502);
     }
 
-    return json({ joke });
+    // שמירה בטבלה. נכשלה: הבדיחה עדיין חוזרת, בלי id.
+    const id = await saveJoke(topic, joke);
+    return id ? json({ joke, id }) : json({ joke });
   },
 };
+
+async function saveJoke(topic, text) {
+  try {
+    const { data, error } = await getSupabase()
+      .from("jokes")
+      .insert({ topic, text })
+      .select("id")
+      .single();
+    if (error) throw error;
+    return data.id;
+  } catch (error) {
+    console.error("joke save error:", error?.message ?? error);
+    return null;
+  }
+}
