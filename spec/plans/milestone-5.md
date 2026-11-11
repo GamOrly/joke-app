@@ -86,3 +86,11 @@ create index jokes_user_id_idx on public.jokes (user_id);
   - config: חסר, ‏sb_secret_ ו-JWT של service_role מחזירים 500 עם auth_not_configured. ‏sb_publishable_ מחזיר 200. ‏POST ‏405.
   - כל התשובות עם `Cache-Control: no-store`.
 - נבדק בדף, בגודל טלפון, מול שרת דמה וספריית Supabase מדומה: הרשמה (וסיסמה קצרה), השם בכפתור, "נכתבה עכשיו בשבילך, נועה", התנתקות, סיסמה שגויה, מייל רשום, כניסה, רענון שומר על הכניסה, מחיקה עם אישור וביטול, טוקן שפג ("צריך להתחבר שוב." והתנתקות), וסגירה בלחיצה מחוץ לחלון.
+- `SUPABASE_PUBLISHABLE_KEY` הוכנס ל-Vercel על ידי Claude, מסוג plain, ב-Production, ‏Preview ו-Development. הערך הובא עם `get_publishable_keys`, ולא נכתב בשום קובץ.
+- push ‏(commit 434ed9a), והפריסה הצליחה. הלינק החי: https://joke-app-one-khaki.vercel.app.
+- נבדק בכתובת החיה:
+  - `/api/config` מחזירה 200, עם כתובת הפרויקט ומפתח `sb_publishable_`, ו-`Cache-Control: no-store`.
+  - `/auth.js` נטען (200). בקוד הדף אין `sb_publishable_` ואין `sb_secret_`.
+  - `/api/delete-account` בלי טוקן: ‏401 עם auth_required.
+  - `/api/joke` עם טוקן לא תקין: ‏401 עם auth_required.
+- נבדק ואושר ידנית בכתובת החיה (11.11.2026): כל שמונת תנאי ההשלמה ב-MILESTONES.md. ב-Network: ההתנתקות פנתה ל-`/auth/v1/logout?scope=local`, הכניסה ל-`/auth/v1/token?grant_type=password`, ואין אף בקשה ל-`/rest/v1`. ‏`/api/config` מחזירה רק `url` ו-`publishableKey`, עם מפתח `sb_publishable_`.
