@@ -23,6 +23,7 @@
       --error-pink: #FFE8EC;
       --hint: #756B92;
       --mint: #1FCB8C;
+      --purple: #8B5CF6;
       --ui-font: "Fredoka", system-ui, sans-serif;
       --joke-font: "Playpen Sans Hebrew", system-ui, sans-serif;
     }
@@ -318,11 +319,257 @@
       color: var(--ink-soft);
     }
 
+    /* Milestone 5: כפתור החשבון, בפינה העליונה בצד שמאל */
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      min-height: 46px;
+      margin-bottom: -10px;
+    }
+
+    .account {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      max-width: 200px;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      border-radius: 999px;
+      box-shadow: 3px 3px 0 var(--ink);
+      padding: 4px 16px;
+      cursor: pointer;
+      transform: rotate(-2deg);
+    }
+
+    .account.signed-in { padding: 4px 6px 4px 14px; }
+
+    .account:active { transform: rotate(-2deg) translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+    .account:focus-visible,
+    .sheet button:focus-visible {
+      outline: 4px solid var(--blue);
+      outline-offset: 3px;
+    }
+
+    .avatar {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--purple);
+      border: 2px solid var(--ink);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 26px;
+      text-align: center;
+    }
+
+    .account-name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* מתחת לבדיחה של משתמש מחובר */
+    .byline {
+      margin: 0;
+      font-size: 15px;
+      color: var(--ink-soft);
+    }
+
+    /* חלונות: עולים מלמטה בטלפון, באמצע במחשב */
+    .sheet {
+      width: 100%;
+      max-width: 440px;
+      max-height: 92dvh;
+      margin: auto auto 0;
+      padding: 0;
+      color: var(--ink);
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      border-radius: 26px 26px 0 0;
+      box-shadow: 0 -6px 0 var(--ink);
+      font-family: var(--ui-font);
+      font-weight: 500;
+    }
+
+    .sheet[open] { animation: rise 0.22s ease-out; }
+
+    .sheet::backdrop { background: rgba(43, 30, 74, 0.45); }
+
+    @media (min-width: 600px) {
+      .sheet {
+        margin: auto;
+        border-radius: 26px;
+        box-shadow: 6px 6px 0 var(--ink);
+      }
+    }
+
+    .sheet-body {
+      position: relative;
+      padding: 22px 20px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .sheet h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .close {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 40px;
+      height: 40px;
+      font: inherit;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 2.5px solid var(--ink);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border: 3px solid var(--ink);
+      border-radius: 999px;
+      box-shadow: 3px 3px 0 var(--ink);
+      margin-left: 52px;
+    }
+
+    .tabs button {
+      flex: 1;
+      min-height: 42px;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      background: transparent;
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .tabs button[aria-selected="true"] { background: var(--ink); color: #fff; }
+
+    .sheet input { transform: none; }
+
+    .sheet .go {
+      min-height: 56px;
+      font-size: 21px;
+      margin: 4px 0 6px;
+    }
+
+    .form-error {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--error);
+      background: var(--error-pink);
+      border: 2px solid var(--error);
+      border-radius: 14px;
+      padding: 8px 12px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile .avatar {
+      width: 54px;
+      height: 54px;
+      font-size: 26px;
+      line-height: 50px;
+      border-width: 3px;
+    }
+
+    .profile-name {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-email {
+      margin: 2px 0 0;
+      font-size: 16px;
+      color: var(--ink-soft);
+      overflow-wrap: anywhere;
+    }
+
+    .plain {
+      min-height: 50px;
+      font: inherit;
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 var(--ink);
+      cursor: pointer;
+    }
+
+    .plain:active { transform: translate(2px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+
+    .danger-link {
+      align-self: center;
+      min-height: 44px;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--error);
+      background: none;
+      border: 0;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .confirm {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--error-pink);
+      border: 2.5px solid var(--error);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .confirm p { margin: 0; font-size: 17px; line-height: 1.45; }
+
+    .confirm-actions { display: flex; gap: 10px; }
+    .confirm-actions button { flex: 1; }
+
+    .plain.danger { background: var(--red); color: #fff; }
+
+    button:disabled { cursor: wait; opacity: 0.75; }
+
     footer {
       text-align: center;
       font-size: 13px;
       color: var(--ink-soft);
       padding: 8px 18px 18px;
+    }
+
+    @keyframes rise {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     @keyframes bob {
@@ -357,6 +604,9 @@
 </head>
 <body>
   <main>
+    <div class="topbar">
+      <button class="account" id="account" type="button" hidden>כניסה</button>
+    </div>
     <h1 style="margin:0">
       <img class="logo" src="assets/logo.svg" alt="בדיחה בלחיצה" width="360" height="190">
     </h1>
@@ -371,6 +621,7 @@
     <section class="bubble" id="bubble" data-state="idle">
       <img class="mascot" id="mascot" src="assets/mascot-idle.svg" alt="הדמות מחייכת" width="120" height="112">
       <p class="message" id="message" aria-live="polite">לוחצים על הכפתור, והבדיחה מופיעה כאן</p>
+      <p class="byline" id="byline" hidden></p>
       <button class="laugh" id="laugh" type="button" hidden>צחקתי · 0</button>
       <p class="laugh-error" id="laugh-error" role="alert" hidden></p>
     </section>
@@ -384,6 +635,54 @@
 
   <footer>מיישם AI ואוטומציה · 53500</footer>
 
+  <!-- חלון הכניסה: שתי לשוניות, כניסה והרשמה -->
+  <dialog class="sheet" id="login-dialog" aria-label="כניסה לחשבון">
+    <div class="sheet-body">
+      <button class="close" type="button" data-close aria-label="סגירה">✕</button>
+      <div class="tabs" role="tablist" aria-label="כניסה או הרשמה">
+        <button type="button" role="tab" id="tab-signin" aria-selected="true" aria-controls="auth-form">כניסה</button>
+        <button type="button" role="tab" id="tab-signup" aria-selected="false" aria-controls="auth-form">הרשמה</button>
+      </div>
+      <form id="auth-form" novalidate>
+        <label for="auth-name" data-signup hidden>איך לקרוא לך?</label>
+        <input id="auth-name" name="name" type="text" maxlength="30" autocomplete="nickname" placeholder="למשל: נועה" data-signup hidden>
+        <label for="auth-email">מייל</label>
+        <input id="auth-email" name="email" type="email" autocomplete="email" dir="ltr" required>
+        <label for="auth-password">סיסמה</label>
+        <input id="auth-password" name="password" type="password" minlength="6" autocomplete="current-password" dir="ltr" required>
+        <p class="form-error" id="auth-error" role="alert" hidden></p>
+        <button class="go" id="auth-submit" type="submit">להיכנס</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- החשבון שלי -->
+  <dialog class="sheet" id="account-dialog" aria-labelledby="account-title">
+    <div class="sheet-body">
+      <button class="close" type="button" data-close aria-label="סגירה">✕</button>
+      <h2 id="account-title">החשבון שלי</h2>
+      <div class="profile">
+        <span class="avatar" id="profile-avatar" aria-hidden="true"></span>
+        <div>
+          <p class="profile-name" id="profile-name"></p>
+          <p class="profile-email" id="profile-email" dir="ltr"></p>
+        </div>
+      </div>
+      <button class="plain" id="sign-out" type="button">התנתקות</button>
+      <button class="danger-link" id="delete-start" type="button">מחיקת החשבון</button>
+      <div class="confirm" id="delete-confirm" hidden>
+        <p>בטוח? החשבון יימחק לתמיד, ואי אפשר לבטל. הבדיחות שלך יישארו, בלי השם שלך.</p>
+        <div class="confirm-actions">
+          <button class="plain danger" id="delete-yes" type="button">כן, למחוק</button>
+          <button class="plain" id="delete-no" type="button">ביטול</button>
+        </div>
+      </div>
+      <p class="form-error" id="account-error" role="alert" hidden></p>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js"></script>
+  <script src="/auth.js"></script>
   <script>
     const form = document.getElementById("joke-form");
     const topicInput = document.getElementById("topic");
@@ -408,8 +707,28 @@
       button.textContent = label;
       button.disabled = state === "think";
       message.textContent = text;
+      byline.hidden = true;
       laughButton.hidden = true;
       laughError.hidden = true;
+    }
+
+    const byline = document.getElementById("byline");
+
+    // כל קריאה ל-/api: עם הטוקן, אם יש.
+    // 401 עם auth_required כשנשלח טוקן: מתנתקים לבד. מחזירה { response, data, loggedOut }.
+    async function api(path, options = {}) {
+      await Auth.ready();
+      const token = await Auth.token();
+      const headers = { ...(options.headers || {}) };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const response = await fetch(path, { ...options, headers });
+      const data = await response.json().catch(() => ({}));
+      let loggedOut = false;
+      if (token && response.status === 401 && data.code === "auth_required") {
+        await Auth.signOut();
+        loggedOut = true;
+      }
+      return { response, data, loggedOut };
     }
 
     // "צחקתי": רק לבדיחה שנשמרה ויש לה id
@@ -432,12 +751,11 @@
       laughError.hidden = true;
 
       try {
-        const response = await fetch("/api/laugh", {
+        const { response, data } = await api("/api/laugh", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id }),
         });
-        const data = await response.json();
         if (id !== currentId) return; // בינתיים הגיעה בדיחה חדשה
         if (response.ok && typeof data.laughs === "number") {
           laughButton.classList.add("done");
@@ -460,8 +778,7 @@
 
     async function loadTop() {
       try {
-        const response = await fetch("/api/top");
-        const data = await response.json();
+        const { response, data } = await api("/api/top");
         if (!response.ok || !Array.isArray(data.jokes)) throw new Error();
 
         topList.replaceChildren(...data.jokes.map((joke) => {
@@ -495,15 +812,20 @@
       setState("think", topic ? `מחפש בדיחה על ${topic}...` : "מחפש בדיחה...");
 
       try {
-        const response = await fetch("/api/joke", {
+        const { response, data, loggedOut } = await api("/api/joke", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ topic }),
         });
-        const data = await response.json();
         if (response.ok && data.joke) {
           setState("joke", data.joke);
           showLaugh(data.id);
+          if (data.author_name) {
+            byline.textContent = `נכתבה עכשיו בשבילך, ${data.author_name}`;
+            byline.hidden = false;
+          }
+        } else if (loggedOut) {
+          setState("error", "צריך להתחבר שוב.");
         } else {
           setState("error", data.error || "משהו השתבש. נסו שוב.");
         }
@@ -511,6 +833,173 @@
         setState("error", "אין חיבור לשרת. נסו שוב.");
       }
     });
+
+    // ---- החשבון: כפתור, חלון כניסה וחלון "החשבון שלי" ----
+    const accountButton = document.getElementById("account");
+    const loginDialog = document.getElementById("login-dialog");
+    const accountDialog = document.getElementById("account-dialog");
+    const authForm = document.getElementById("auth-form");
+    const tabSignIn = document.getElementById("tab-signin");
+    const tabSignUp = document.getElementById("tab-signup");
+    const authName = document.getElementById("auth-name");
+    const authEmail = document.getElementById("auth-email");
+    const authPassword = document.getElementById("auth-password");
+    const authError = document.getElementById("auth-error");
+    const authSubmit = document.getElementById("auth-submit");
+    const accountError = document.getElementById("account-error");
+    const deleteConfirm = document.getElementById("delete-confirm");
+    const deleteStart = document.getElementById("delete-start");
+    let mode = "signin";
+
+    function nameOf(session) {
+      const name = session?.user?.user_metadata?.full_name;
+      return typeof name === "string" && name.trim() ? name.trim() : (session?.user?.email || "");
+    }
+
+    function firstLetter(name) {
+      return [...name][0] || "?";
+    }
+
+    // כפתור החשבון: לאורח "כניסה", למחובר עיגול עם האות הראשונה והשם
+    function renderAccount(session) {
+      accountButton.replaceChildren();
+      if (session) {
+        const name = nameOf(session);
+        const avatar = document.createElement("span");
+        avatar.className = "avatar";
+        avatar.setAttribute("aria-hidden", "true");
+        avatar.textContent = firstLetter(name);
+        const label = document.createElement("span");
+        label.className = "account-name";
+        label.textContent = name;
+        accountButton.append(avatar, label);
+        accountButton.classList.add("signed-in");
+        accountButton.setAttribute("aria-label", `החשבון שלי: ${name}`);
+      } else {
+        accountButton.textContent = "כניסה";
+        accountButton.classList.remove("signed-in");
+        accountButton.removeAttribute("aria-label");
+        if (accountDialog.open) accountDialog.close();
+      }
+    }
+
+    function setMode(next) {
+      mode = next;
+      const signup = mode === "signup";
+      tabSignIn.setAttribute("aria-selected", String(!signup));
+      tabSignUp.setAttribute("aria-selected", String(signup));
+      authForm.querySelectorAll("[data-signup]").forEach((el) => { el.hidden = !signup; });
+      authPassword.autocomplete = signup ? "new-password" : "current-password";
+      authSubmit.textContent = signup ? "להירשם" : "להיכנס";
+      authError.hidden = true;
+    }
+
+    function openLogin() {
+      setMode("signin");
+      authForm.reset();
+      authSubmit.disabled = false;
+      loginDialog.showModal();
+      authEmail.focus();
+    }
+
+    function openAccount() {
+      const session = Auth.session();
+      if (!session) return openLogin();
+      const name = nameOf(session);
+      document.getElementById("profile-avatar").textContent = firstLetter(name);
+      document.getElementById("profile-name").textContent = name;
+      document.getElementById("profile-email").textContent = session.user?.email || "";
+      deleteConfirm.hidden = true;
+      deleteStart.hidden = false;
+      accountError.hidden = true;
+      accountDialog.showModal();
+    }
+
+    accountButton.addEventListener("click", () => {
+      if (Auth.session()) openAccount(); else openLogin();
+    });
+
+    tabSignIn.addEventListener("click", () => setMode("signin"));
+    tabSignUp.addEventListener("click", () => { setMode("signup"); authName.focus(); });
+
+    // Escape סוגר לבד (dialog). לחיצה מחוץ לחלון, או על ✕, סוגרת.
+    for (const dialog of [loginDialog, accountDialog]) {
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog || event.target.closest("[data-close]")) dialog.close();
+      });
+    }
+
+    function showAuthError(text) {
+      authError.textContent = text;
+      authError.hidden = false;
+    }
+
+    authForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (authSubmit.disabled) return;
+      authError.hidden = true;
+
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+      if (mode === "signup" && !authName.value.trim()) return showAuthError("איך לקרוא לך? כתבו שם.");
+      if (!email) return showAuthError("כתבו מייל.");
+      if (mode === "signup" && password.length < 6) return showAuthError("הסיסמה צריכה 6 תווים לפחות.");
+      if (!password) return showAuthError("כתבו סיסמה.");
+
+      authSubmit.disabled = true;
+      const result = mode === "signup"
+        ? await Auth.signUp(authName.value, email, password)
+        : await Auth.signIn(email, password);
+      authSubmit.disabled = false;
+
+      if (result.ok) {
+        loginDialog.close();
+        authForm.reset();
+      } else {
+        showAuthError(result.error);
+      }
+    });
+
+    document.getElementById("sign-out").addEventListener("click", async () => {
+      await Auth.signOut();
+      accountDialog.close();
+    });
+
+    deleteStart.addEventListener("click", () => {
+      deleteConfirm.hidden = false;
+      deleteStart.hidden = true;
+      document.getElementById("delete-no").focus();
+    });
+
+    document.getElementById("delete-no").addEventListener("click", () => {
+      deleteConfirm.hidden = true;
+      deleteStart.hidden = false;
+    });
+
+    document.getElementById("delete-yes").addEventListener("click", async (event) => {
+      const yes = event.currentTarget;
+      yes.disabled = true;
+      accountError.hidden = true;
+      try {
+        const { response, data, loggedOut } = await api("/api/delete-account", { method: "POST" });
+        if (response.ok && data.deleted) {
+          await Auth.signOut();
+          accountDialog.close();
+          byline.hidden = true;
+        } else if (!loggedOut) {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        accountError.textContent = error?.message || "החשבון לא נמחק. נסו שוב.";
+        accountError.hidden = false;
+      } finally {
+        yes.disabled = false;
+      }
+    });
+
+    // הכניסה זמינה רק אם /api/config ענה. אחרת הכפתור נשאר מוסתר, והבדיחות עובדות כרגיל.
+    Auth.onChange(renderAccount);
+    Auth.ready().then((ok) => { accountButton.hidden = !ok; });
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js");

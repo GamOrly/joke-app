@@ -1,10 +1,7 @@
 // "הכי מצחיקות": חמש הבדיחות עם הכי הרבה צחוקים, רק עם צחוק אחד לפחות.
 
+import { json } from "../lib/http.js";
 import { getSupabase } from "../lib/supabase.js";
-
-function json(body, status = 200) {
-  return Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
-}
 
 export default {
   async fetch(request) {

@@ -1,12 +1,9 @@
 // "צחקתי": מוסיפה צחוק אחד דרך add_laugh, ומחזירה את המונה החדש.
 
+import { json } from "../lib/http.js";
 import { getSupabase } from "../lib/supabase.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function json(body, status = 200) {
-  return Response.json(body, { status });
-}
 
 export default {
   async fetch(request) {

@@ -1,16 +1,14 @@
 // בדיחה מ-GPT-5 דרך Responses API. המפתח נקרא כאן בלבד, ולא חוזר לדף.
 // Milestone 4: כל בדיחה נשמרת בטבלה jokes, וה-id שלה חוזר לדף.
+// Milestone 5: משתמש מחובר מזוהה מהטוקן, והבדיחה נשמרת עם user_id ו-author_name.
 
-import { getSupabase } from "../lib/supabase.js";
+import { json, authRequired, readJson } from "../lib/http.js";
+import { getSupabase, hasToken, getUserFromRequest, displayName } from "../lib/supabase.js";
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 
 const INSTRUCTIONS =
   "אתה כותב בדיחות קצרות בעברית. כתוב בדיחה אחת בלבד, עד ארבעה משפטים, נקייה ומתאימה לכל גיל. בלי הקדמה, בלי הסבר ובלי אימוג׳י. רק הבדיחה.";
-
-function json(body, status = 200) {
-  return Response.json(body, { status });
-}
 
 // הודעה קצרה בעברית לפי הסטטוס והקוד של OpenAI
 function errorMessage(status, code = "", type = "") {
@@ -47,12 +45,22 @@ export default {
       return json({ error: "אפשר לשלוח רק POST" }, 405);
     }
 
-    let topic = "";
-    try {
-      const body = await request.json();
-      if (typeof body?.topic === "string") topic = body.topic.trim().slice(0, 100);
-    } catch {
-      // גוף שבור: אין נושא
+    // גוף שבור או גדול מדי: אין נושא
+    const body = await readJson(request);
+    const topic = typeof body?.topic === "string" ? body.topic.trim().slice(0, 100) : "";
+
+    // יש טוקן: מזהים את המשתמש לפני OpenAI.
+    // טוקן לא מוכר: 401, בלי לפנות ל-OpenAI. Supabase לא זמין: בדיחה בלי שמירה.
+    let user = null;
+    let canSave = true;
+    if (hasToken(request)) {
+      try {
+        user = await getUserFromRequest(request, getSupabase());
+        if (!user) return authRequired();
+      } catch (error) {
+        console.error("joke error: auth check failed", error?.message ?? error);
+        canSave = false;
+      }
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
@@ -63,7 +71,7 @@ export default {
 
     const model = process.env.OPENAI_MODEL || "gpt-5";
     const input = topic ? `נושא הבדיחה: ${topic}` : "אין נושא. ספר בדיחה כללית על החיים.";
-    console.log(`joke request: topic="${topic}" model=${model}`);
+    console.log(`joke request: topic="${topic}" model=${model} user=${user ? "yes" : "guest"}`);
 
     let response;
     try {
@@ -102,16 +110,18 @@ export default {
     }
 
     // שמירה בטבלה. נכשלה: הבדיחה עדיין חוזרת, בלי id.
-    const id = await saveJoke(topic, joke);
-    return id ? json({ joke, id }) : json({ joke });
+    // השם והמזהה רק מהטוקן, אף פעם לא מהגוף.
+    const author_name = user ? displayName(user) : null;
+    const id = canSave ? await saveJoke(topic, joke, user?.id ?? null, author_name) : null;
+    return id ? json({ joke, id, author_name }) : json({ joke, author_name });
   },
 };
 
-async function saveJoke(topic, text) {
+async function saveJoke(topic, text, user_id, author_name) {
   try {
     const { data, error } = await getSupabase()
       .from("jokes")
-      .insert({ topic, text })
+      .insert({ topic, text, user_id, author_name })
       .select("id")
       .single();
     if (error) throw error;
