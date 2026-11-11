@@ -99,4 +99,6 @@ grant execute on function public.add_laugh(uuid) to service_role;
   - `/api/joke` (עם OpenAI מדומה) מחזירה את הבדיחה בלי id, ורושמת את השגיאה ב-console.error.
 - הדף נבדק בגודל טלפון, מול שרת דמה: ‏"צחקתי · 0" מופיע מתחת לבדיחה. לחיצה מעדכנת את המונה, צובעת במנטה ונועלת, והרשימה נטענת מחדש. בדיחה חדשה מחזירה כפתור פתוח עם 0.
 - ברשימה, מונה של 1 מוצג כ"צחוק אחד".
-- עוד לא נבדק: חיבור אמיתי ל-Supabase מ-Vercel. זה נבדק אחרי שהמשתנים ב-Vercel וה-push.
+- המשתנים ב-Vercel: ‏SUPABASE_SECRET_KEY הוכנס ביד. ‏SUPABASE_URL הוכנס על ידי Claude, מסוג plain, ב-Production וב-Preview.
+- push ‏(commit fdd8e08), והפריסה הצליחה. הלינק החי: https://joke-app-one-khaki.vercel.app. ‏`/api/top` בכתובת החיה מחזירה 200, וכך מוכח החיבור ל-Supabase.
+- נבדק ואושר ידנית בכתובת החיה (11.11.2026): בדיחה וצחוק, השורה בטבלה, Network בלי supabase.co, ושתי לחיצות באותו רגע.
