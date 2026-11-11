@@ -3,11 +3,24 @@
 // כתובת הפרויקט והמפתח הציבורי מגיעים מ-/api/config, ולא כתובים כאן.
 // הדף לא קורא ולא כותב טבלאות. הבקשות ל-supabase.co הן רק ל-/auth/v1.
 
+// בונוס: כניסה עם Google (OAuth, ‏pkce). הספרייה מחליפה את ?code= בטוקן לבד.
+
 (() => {
   let client = null;
+  let config = null; // { url, publishableKey } מ-/api/config
   let current = null; // הסשן הנוכחי, או null
   let readyPromise = null;
   const listeners = new Set();
+
+  // חזרה מ-Google: מה היה בכתובת, לפני שהספרייה נגעה בה
+  const OAUTH_PARAMS = ["code", "error", "error_code", "error_description", "sb_flow_id", "state"];
+  const startUrl = new URL(window.location.href);
+  const startHash = new URLSearchParams(startUrl.hash.slice(1));
+  const oauthReturn = {
+    code: startUrl.searchParams.has("code"),
+    error: startUrl.searchParams.get("error") || startHash.get("error") || "",
+  };
+  let oauthOutcome = { returned: false, ok: false, error: "" };
 
   const MESSAGES = {
     invalid_credentials: "המייל או הסיסמה לא נכונים.",
@@ -21,6 +34,9 @@
     signup_disabled: "ההרשמה סגורה כרגע.",
     email_not_confirmed: "צריך לאשר את המייל לפני הכניסה.",
     not_configured: "הכניסה עוד לא זמינה. נסו שוב מאוחר יותר.",
+    google_off: "הכניסה עם Google עוד לא מוגדרת.",
+    google_cancelled: "הכניסה עם Google בוטלה.",
+    google_failed: "הכניסה עם Google לא הצליחה. נסו שוב.",
   };
   const FALLBACK = "הכניסה לא הצליחה. נסו שוב.";
 
@@ -52,7 +68,7 @@
       try {
         if (!window.supabase?.createClient) throw new Error("supabase library missing");
         const response = await fetch("/api/config");
-        const config = await response.json();
+        config = await response.json();
         if (!response.ok || !config.url || !config.publishableKey) throw new Error(config.code || "config failed");
 
         client = window.supabase.createClient(config.url, config.publishableKey, {
@@ -69,17 +85,82 @@
           emit();
         });
 
+        // getSession מחכה שהספרייה תסיים להחליף את ?code= בטוקן
         const { data } = await client.auth.getSession();
         current = data?.session ?? null;
+        finishOAuthReturn();
         emit();
         return true;
       } catch (error) {
         console.error("auth not ready:", error?.message ?? error);
         client = null;
+        if (oauthReturn.code || oauthReturn.error) {
+          oauthOutcome = { returned: true, ok: false, error: MESSAGES.google_failed };
+          cleanUrl();
+        }
         return false;
       }
     })();
     return readyPromise;
+  }
+
+  // בחזרה מ-Google: הצליח או לא, ומנקים את הכתובת בשני המקרים
+  function finishOAuthReturn() {
+    if (!oauthReturn.code && !oauthReturn.error) return;
+    if (oauthReturn.error) {
+      const cancelled = oauthReturn.error === "access_denied";
+      oauthOutcome = { returned: true, ok: false, error: cancelled ? MESSAGES.google_cancelled : MESSAGES.google_failed };
+      console.error("google sign-in returned error:", oauthReturn.error);
+    } else if (!current) {
+      oauthOutcome = { returned: true, ok: false, error: MESSAGES.google_failed };
+      console.error("google sign-in: code was not exchanged");
+    } else {
+      oauthOutcome = { returned: true, ok: true, error: "" };
+    }
+    cleanUrl();
+  }
+
+  function cleanUrl() {
+    const url = new URL(window.location.href);
+    for (const key of OAUTH_PARAMS) url.searchParams.delete(key);
+    const hash = new URLSearchParams(url.hash.slice(1));
+    if (hash.has("error") || hash.has("error_description") || hash.has("access_token")) url.hash = "";
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  }
+
+  // כניסה עם Google. קודם בודקים ש-Google דולק, בלי לצאת מהדף.
+  // beforeLeave נקרא רגע לפני היציאה, כדי לשמור את מה שהמשתמש עשה.
+  async function google(beforeLeave) {
+    if (!(await ready())) return fail(MESSAGES.not_configured);
+
+    try {
+      const response = await fetch(`${config.url}/auth/v1/settings`, {
+        headers: { apikey: config.publishableKey },
+      });
+      const settings = await response.json();
+      if (!response.ok || settings?.external?.google !== true) return fail(MESSAGES.google_off);
+    } catch (error) {
+      console.error("google settings check failed:", error);
+      return fail(MESSAGES.google_failed);
+    }
+
+    try {
+      beforeLeave?.();
+      const { error } = await client.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/` },
+      });
+      if (error) throw error;
+      return { ok: true, leaving: true };
+    } catch (error) {
+      console.error("google sign-in error:", error);
+      return fail(MESSAGES.google_failed);
+    }
+  }
+
+  // התוצאה של החזרה מ-Google, אם הייתה: { returned, ok, error }
+  function oauthResult() {
+    return oauthOutcome;
   }
 
   async function signUp(name, email, password) {
@@ -154,5 +235,5 @@
     return () => listeners.delete(fn);
   }
 
-  window.Auth = { ready, signUp, signIn, signOut, session, token, onChange };
+  window.Auth = { ready, signUp, signIn, signOut, session, token, onChange, google, oauthResult };
 })();
