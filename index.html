@@ -940,8 +940,9 @@
     <div class="sheet-body">
       <button class="close" type="button" data-close aria-label="סגירה">✕</button>
       <p class="login-note" id="login-note" hidden></p>
-      <button class="google" id="google" type="button">המשך עם Google</button>
-      <p class="or"><span>או עם מייל וסיסמה</span></p>
+      <!-- בונוס Google: מוסתר בהחלטה. כדי להדליק: מורידים את hidden משתי השורות, ומגדירים את Google ב-Supabase -->
+      <button class="google" id="google" type="button" hidden>המשך עם Google</button>
+      <p class="or" hidden><span>או עם מייל וסיסמה</span></p>
       <div class="tabs" role="tablist" aria-label="כניסה או הרשמה">
         <button type="button" role="tab" id="tab-signin" aria-selected="true" aria-controls="auth-form">כניסה</button>
         <button type="button" role="tab" id="tab-signup" aria-selected="false" aria-controls="auth-form">הרשמה</button>
